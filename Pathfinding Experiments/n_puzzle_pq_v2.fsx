@@ -18,7 +18,7 @@ type TabularPriorityQueue(c : int) =
     let mutable min_b = Int32.MaxValue
     let mutable max_b = Int32.MinValue
     let mutable size = 0
-    let upper_size = 3000
+    let upper_size = 10000000
     let mutable num_removals = 0
 
     member t.Add k v =
@@ -134,7 +134,7 @@ let astar() =
 
         let mutable s = 0
         for r=0 to k-1 do
-            s <- s + column_linear_conflicts r + row_linear_conflicts r
+            s <- s + (column_linear_conflicts r + row_linear_conflicts r)*2
             for c=0 to k-1 do
                 let e = ar.[r*k+c] |> int
                 s <- s + manhattan_distance_for_a_single_tile e (r,c)

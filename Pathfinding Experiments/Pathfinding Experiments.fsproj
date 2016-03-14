@@ -74,8 +74,8 @@
     <None Include="n_puzzle_pq.fsx" />
     <None Include="n_puzzle_pq_v3.fsx" />
     <None Include="random_n_puzzle.fsx" />
-    <None Include="n_puzzle_pq_v2.fsx" />
     <None Include="n_puzzle_pq_v4.fsx" />
+    <None Include="n_puzzle_pq_v2.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DequeNet">

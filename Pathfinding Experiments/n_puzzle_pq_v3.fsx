@@ -89,7 +89,7 @@ let astar() =
 
         let mutable s = 0
         for r=0 to k-1 do
-            s <- s + column_linear_conflicts r + row_linear_conflicts r // This line makes the cost function really slow, but it also makes it quite better.
+            s <- s + (column_linear_conflicts r + row_linear_conflicts r)*2
             for c=0 to k-1 do
                 let e = ar.[r*k+c] |> int
                 s <- s + manhattan_distance_for_a_single_tile e (r,c)

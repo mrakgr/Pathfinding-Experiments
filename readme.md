@@ -4,4 +4,6 @@ The only thing remaining for me right now is to add Jump Point Search for Pacman
 
 The N puzzle example, shows how to apply a tabular priority queue along with Manhattan distance and the linear conflicts heuristics for Astar search. The tabular queue is quite a bit faster than a tree based one.
 
-I'll use a tabual queue on Pacman as my next target. 
+I'll try IDSA* and the pattern database on the N puzzle and after that I'll use a tabular queue on Pacman as my next target. Jump Point Search comes after that.
+
+The final endgame for this repository is for me to use DiffSharp or the Spiral library and implement a neural net for the heuristic function.
