@@ -18,7 +18,7 @@ type TabularPriorityQueue(c : int) =
     let mutable min_b = Int32.MaxValue
     let mutable max_b = Int32.MinValue
     let mutable size = 0
-    let upper_size = 10000000
+    let upper_size = 3000
     let mutable num_removals = 0
 
     member t.Add k v =
@@ -189,6 +189,10 @@ let astar() =
     astar()
     goal.Value, num_ops
 
+#time
 let (max_goal, path), num_ops = astar()
 let l = path.Length
+#time
 
+//printfn "%i" l
+//for x in path do printfn "%A" x

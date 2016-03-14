@@ -1,18 +1,27 @@
-﻿// Breadth first search for the N puzzle problem.
+﻿// Astar search for the N puzzle problem with the tabular priority queue.
+// Finishes in 10ms compared to 1.6s for BFS.
 
 let k = 3
+let init_pos, init = (2,0), [|5; 6; 8; 7; 2; 1; 0; 3; 4|]
 
 open System
 open System.Collections.Generic
 
-type TabularPriorityQueue() =
-    let d = Dictionary<int,Stack<int>>(1000)
+type Moves =
+| UP = 0
+| LEFT = 1
+| RIGHT = 2
+| DOWN = 3
+
+type TabularPriorityQueue(c : int) =
+    let d = Dictionary<int,Stack<_>>(c)
     let mutable min_b = Int32.MaxValue
     let mutable max_b = Int32.MinValue
     let mutable size = 0
 
     member t.Add k v =
         min_b <- min min_b k
+//        printfn "min_b is %i" min_b
         size <- size+1
         match d.TryGetValue k with
         | true, stack -> stack.Push v
@@ -20,10 +29,10 @@ type TabularPriorityQueue() =
 
     member t.PopMin =
         if size = 0 then failwith "Cannot pop an empty queue."
-        size <- size-1
         match d.TryGetValue min_b with
         | true, stack -> 
             let t = stack.Pop()
+            size <- size-1
             if stack.Count = 0 then 
                 d.Remove(min_b) |> ignore
                 min_b <- min_b+1
@@ -61,27 +70,32 @@ let inline check_victory (ar: int[]) = // Breaking out of a loop can be a real p
         else true
     loop 1
 
-type Moves =
-| UP = 0uy
-| LEFT = 1uy
-| RIGHT = 2uy
-| DOWN = 3uy
 
-let init_pos, init = (2,0), [|5; 6; 8; 7; 2; 1; 0; 3; 4|]
-        
-let bfs() =
-    let queue = Queue(10000)
+
+let inline manhattan_distance (ar: int[]) moves_elapsed =
+    let inline manhattan_distance_for_a_single_tile e (r,c) =
+        abs(r-(e / k)) + abs(c-(e % k))
+    let mutable s = 0
+    for r=0 to k-1 do
+        for c=0 to k-1 do
+            let e = ar.[r*k+c]
+            s <- s + manhattan_distance_for_a_single_tile e (r,c)
+    s + moves_elapsed
+
+let astar() =
+    let queue = TabularPriorityQueue(1000)
     let mutable goal = None
 
-    queue.Enqueue(init,init_pos,[])
+    queue.Add (manhattan_distance init 0) (init,init_pos,[])
     let mutable max_len = 2
 
-    let rec bfs() =
+    let rec astar() =
         if goal = None then
-            let ar, (r,c as p), past_moves = queue.Dequeue()
-            if past_moves.Length > max_len then
+            let ar, (r,c as p), past_moves = queue.PopMin
+            let past_moves_length = past_moves.Length
+            if past_moves_length > max_len then
                 max_len <- past_moves.Length
-                printfn "max_len = %i" max_len
+//                printfn "max_len = %i" max_len
 //            printfn "ar=%A p=%A past_moves=%A" ar p past_moves
             [|-1+r,c,Moves.UP; // UP
             r,-1+c,Moves.LEFT; // LEFT
@@ -108,19 +122,17 @@ let bfs() =
                         if check_victory s then
                             goal <- Some (s, m::past_moves |> List.rev)
                         else
-                            queue.Enqueue(s,(r,c), m::past_moves)
+                            queue.Add (manhattan_distance s (past_moves_length+1)) (s,(r,c), m::past_moves)
                             loop (i+1)
                 loop 0
-            bfs()
-    bfs()
+            astar()
+    astar()
     goal.Value
 
 #time
-let max_goal, path = bfs()
+let max_goal, path = astar()
 let l = path.Length
 #time
-
-// I'll leave off the above here. The BFS with lists for past moves is 1.65s on my machine.
 
 //printfn "%i" l
 //for x in path do printfn "%A" x

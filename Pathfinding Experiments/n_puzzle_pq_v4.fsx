@@ -1,8 +1,6 @@
-﻿// Astar search for the N puzzle problem with the tabular priority queue.
+﻿// For the HackerRanks challenge. Based of n_puzzle_pq_v2.
 
-let k = 4
-let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
-//let init_pos, init = (1, 2), [|4; 1; 2; 3; 8; 6; 0; 10; 9; 5; 15; 7; 12; 13; 11; 14|]
+// Astar search for the N puzzle problem with the tabular priority queue.
 
 open System
 open System.Collections.Generic
@@ -19,7 +17,7 @@ type TabularPriorityQueue(c : int) =
     let mutable max_b = Int32.MinValue
     let mutable size = 0
     let upper_size = 10000000
-    let mutable num_removals = 0
+//    let mutable num_removals = 0
 
     member t.Add k v =
         if k < min_b then min_b <- k
@@ -30,8 +28,8 @@ type TabularPriorityQueue(c : int) =
             match d.TryGetValue max_b with
             | true, stack -> 
                 stack.Pop() |> ignore
-                num_removals <- num_removals+1
-                if num_removals % upper_size = 0 then printfn "Removed %i elements." num_removals
+//                num_removals <- num_removals+1
+//                if num_removals % upper_size = 0 then printfn "Removed %i elements." num_removals
                 size <- size-1
                 if stack.Count = 0 then 
                     d.Remove(max_b) |> ignore
@@ -60,6 +58,16 @@ type TabularPriorityQueue(c : int) =
             t.PopMin
 
     member t.Size = size
+
+let k, init =
+    Console.ReadLine() |> Int32.Parse
+    |> fun k ->
+        k,
+        [|for i=1 to k*k do yield Console.ReadLine() |> Int32.Parse |> byte|]
+
+let init_pos =
+    init |> Array.findIndex ((=)0uy) // Partial application of the = operator.
+            |> fun x -> x/k,x%k
 
 let inline is_viable_swap (r,c) =
     r >= 0 && c >= 0 && r < k && c < k
@@ -145,17 +153,17 @@ let astar() =
     let mutable goal = None
 
     queue.Add (heuristic_cost init) (init,init_pos,[])
-    let mutable max_len = 2
-    let mutable num_ops = 0
+//    let mutable max_len = 2
+//    let mutable num_ops = 0
 
     let rec astar() =
         if goal = None then
-            num_ops <- num_ops+1
+//            num_ops <- num_ops+1
             let ar, (r,c as p), past_moves = queue.PopMin
             let past_moves_length = past_moves.Length
-            if past_moves_length > max_len then
-                max_len <- past_moves.Length
-                printfn "max_len = %i" max_len
+//            if past_moves_length > max_len then
+//                max_len <- past_moves.Length
+//                printfn "max_len = %i" max_len
 //            printfn "ar=%A p=%A past_moves=%A" ar p past_moves
             [|-1+r,c,Moves.UP; // UP
             r,-1+c,Moves.LEFT; // LEFT
@@ -187,8 +195,11 @@ let astar() =
                 loop 0
             astar()
     astar()
-    goal.Value, num_ops
+    goal.Value
 
-let (max_goal, path), num_ops = astar()
+let max_goal, path = astar()
 let l = path.Length
+
+printfn "%i" l
+for x in path do printfn "%A" x
 

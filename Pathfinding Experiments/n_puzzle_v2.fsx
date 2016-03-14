@@ -1,6 +1,7 @@
 ﻿// Breadth first search for the N puzzle problem.
 
 let k = 3
+let init_pos, init = (2,0), [|5; 6; 8; 7; 2; 1; 0; 3; 4|]
 
 open System
 open System.Collections.Generic
@@ -66,14 +67,12 @@ type Moves =
 | LEFT = 1uy
 | RIGHT = 2uy
 | DOWN = 3uy
-
-let init_pos, init = (2,0), [|5; 6; 8; 7; 2; 1; 0; 3; 4|]
-        
+       
 let bfs() =
     let queue = Queue(10000)
     let mutable goal = None
 
-    queue.Enqueue(init,init_pos,[])
+    queue.Enqueue(init,init_pos,[||])
     let mutable max_len = 2
 
     let rec bfs() =
@@ -89,15 +88,15 @@ let bfs() =
             1+r,c,Moves.DOWN|] // DOWN
             |> Array.filter (fun (r,c,m) -> 
                 is_viable_swap (r,c) &&
-                match past_moves with
-                | x::_ ->
+                if past_moves.Length > 0 then
+                    let x = past_moves |> Array.last
                     match x,m with // Make sure not to retrace
                     | (Moves.LEFT,Moves.RIGHT) -> false
                     | (Moves.RIGHT,Moves.LEFT) -> false
                     | (Moves.UP,Moves.DOWN) -> false
                     | (Moves.DOWN,Moves.UP) -> false
                     | _ -> true
-                | [] -> true)
+                else true)
             |> fun moves ->
 //                printfn "moves=%A" moves
                 let rec loop i =
@@ -106,21 +105,19 @@ let bfs() =
                         let s = swap p (r,c) ar
 //                        printfn "s=%A" s
                         if check_victory s then
-                            goal <- Some (s, m::past_moves |> List.rev)
+                            goal <- Some (s, Array.append past_moves [|m|])
                         else
-                            queue.Enqueue(s,(r,c), m::past_moves)
+                            queue.Enqueue(s,(r,c), Array.append past_moves [|m|])
                             loop (i+1)
                 loop 0
             bfs()
     bfs()
     goal.Value
 
-#time
+#time // 1.7s on my machine. I guess I'll be using lists to memorize moves then.
 let max_goal, path = bfs()
 let l = path.Length
 #time
-
-// I'll leave off the above here. The BFS with lists for past moves is 1.65s on my machine.
 
 //printfn "%i" l
 //for x in path do printfn "%A" x

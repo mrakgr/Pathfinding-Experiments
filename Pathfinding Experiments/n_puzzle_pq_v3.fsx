@@ -1,4 +1,7 @@
-﻿// Astar search for the N puzzle problem with the tabular priority queue.
+﻿// Astar search for the N puzzle problem with the priority queue by BlueRaja.
+
+#r @"..\packages\OptimizedPriorityQueue.2.0.0\lib\net45\Priority Queue.dll"
+open Priority_Queue
 
 let k = 4
 let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
@@ -12,54 +15,6 @@ type Moves =
 | LEFT = 1
 | RIGHT = 2
 | DOWN = 3
-
-type TabularPriorityQueue(c : int) =
-    let d = Dictionary<int,Stack<_>>(c)
-    let mutable min_b = Int32.MaxValue
-    let mutable max_b = Int32.MinValue
-    let mutable size = 0
-    let upper_size = 10000000
-    let mutable num_removals = 0
-
-    member t.Add k v =
-        if k < min_b then min_b <- k
-        if k > max_b then max_b <- k
-        size <- size+1
-
-        let rec remove_max() =
-            match d.TryGetValue max_b with
-            | true, stack -> 
-                stack.Pop() |> ignore
-                num_removals <- num_removals+1
-                if num_removals % upper_size = 0 then printfn "Removed %i elements." num_removals
-                size <- size-1
-                if stack.Count = 0 then 
-                    d.Remove(max_b) |> ignore
-                    max_b <- max_b-1
-            | false, _ ->
-                max_b <- max_b-1
-                remove_max()
-
-        if size = upper_size then remove_max()
-        match d.TryGetValue k with
-        | true, stack -> stack.Push v
-        | false, _ -> d.Add(k,Stack([|v|]))
-
-    member t.PopMin =
-        if size = 0 then failwith "Cannot pop an empty queue."
-        match d.TryGetValue min_b with
-        | true, stack -> 
-            let t = stack.Pop()
-            size <- size-1
-            if stack.Count = 0 then 
-                d.Remove(min_b) |> ignore
-                min_b <- min_b+1
-            t
-        | false, _ ->
-            min_b <- min_b+1
-            t.PopMin
-
-    member t.Size = size
 
 let inline is_viable_swap (r,c) =
     r >= 0 && c >= 0 && r < k && c < k
@@ -89,7 +44,7 @@ let inline check_victory (ar: _[]) = // Breaking out of a loop can be a real pai
     loop 1
 
 let astar() =
-    let conf_buffer = ResizeArray()
+    let conf_buffer = ResizeArray() // Having preallocated memory here improves the performance of the heuristic_cost function by over 50%.
     let conf_buffer2 = ResizeArray()
 
     let inline heuristic_cost (ar: _[]) =
@@ -134,24 +89,24 @@ let astar() =
 
         let mutable s = 0
         for r=0 to k-1 do
-            s <- s + column_linear_conflicts r + row_linear_conflicts r
+            s <- s + column_linear_conflicts r + row_linear_conflicts r // This line makes the cost function really slow, but it also makes it quite better.
             for c=0 to k-1 do
                 let e = ar.[r*k+c] |> int
                 s <- s + manhattan_distance_for_a_single_tile e (r,c)
         s
 
-
-    let queue = TabularPriorityQueue(1000)
+    let queue = SimplePriorityQueue()
     let mutable goal = None
 
-    queue.Add (heuristic_cost init) (init,init_pos,[])
+    queue.Enqueue((init,init_pos,[]),(heuristic_cost init |> float))
+
     let mutable max_len = 2
     let mutable num_ops = 0
 
     let rec astar() =
         if goal = None then
             num_ops <- num_ops+1
-            let ar, (r,c as p), past_moves = queue.PopMin
+            let ar, (r,c as p), past_moves = queue.Dequeue()
             let past_moves_length = past_moves.Length
             if past_moves_length > max_len then
                 max_len <- past_moves.Length
@@ -182,13 +137,17 @@ let astar() =
                         if check_victory s then
                             goal <- Some (s, m::past_moves |> List.rev)
                         else
-                            queue.Add (heuristic_cost s + (past_moves_length+1)) (s,(r,c), m::past_moves)
+                            queue.Enqueue((s,(r,c), m::past_moves),(heuristic_cost s + (past_moves_length+1) |> float))
                             loop (i+1)
                 loop 0
             astar()
     astar()
     goal.Value, num_ops
 
+#time
 let (max_goal, path), num_ops = astar()
 let l = path.Length
+#time
 
+//printfn "%i" l
+//for x in path do printfn "%A" x
