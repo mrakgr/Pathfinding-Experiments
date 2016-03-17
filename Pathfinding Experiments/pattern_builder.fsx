@@ -1,6 +1,8 @@
-﻿// For the HackerRanks challenge. Based of n_puzzle_pq_v2.
+﻿// Astar search for the N puzzle problem with the tabular priority queue.
 
-// Astar search for the N puzzle problem with the tabular priority queue.
+let k = 4
+let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
+//let init_pos, init = (1, 2), [|4; 1; 2; 3; 8; 6; 0; 10; 9; 5; 15; 7; 12; 13; 11; 14|]
 
 open System
 open System.Collections.Generic
@@ -10,64 +12,6 @@ type Moves =
 | LEFT = 1
 | RIGHT = 2
 | DOWN = 3
-
-type TabularPriorityQueue(c : int) =
-    let d = Dictionary<int,Stack<_>>(c)
-    let mutable min_b = Int32.MaxValue
-    let mutable max_b = Int32.MinValue
-    let mutable size = 0
-    let upper_size = 10000000
-//    let mutable num_removals = 0
-
-    member t.Add k v =
-        if k < min_b then min_b <- k
-        if k > max_b then max_b <- k
-        size <- size+1
-
-        let rec remove_max() =
-            match d.TryGetValue max_b with
-            | true, stack -> 
-                stack.Pop() |> ignore
-//                num_removals <- num_removals+1
-//                if num_removals % upper_size = 0 then printfn "Removed %i elements." num_removals
-                size <- size-1
-                if stack.Count = 0 then 
-                    d.Remove(max_b) |> ignore
-                    max_b <- max_b-1
-            | false, _ ->
-                max_b <- max_b-1
-                remove_max()
-
-        if size = upper_size then remove_max()
-        match d.TryGetValue k with
-        | true, stack -> stack.Push v
-        | false, _ -> d.Add(k,Stack([|v|]))
-
-    member t.PopMin =
-        if size = 0 then failwith "Cannot pop an empty queue."
-        match d.TryGetValue min_b with
-        | true, stack -> 
-            let t = stack.Pop()
-            size <- size-1
-            if stack.Count = 0 then 
-                d.Remove(min_b) |> ignore
-                min_b <- min_b+1
-            t
-        | false, _ ->
-            min_b <- min_b+1
-            t.PopMin
-
-    member t.Size = size
-
-let k, init =
-    Console.ReadLine() |> Int32.Parse
-    |> fun k ->
-        k,
-        [|for i=1 to k*k do yield Console.ReadLine() |> Int32.Parse |> byte|]
-
-let init_pos =
-    init |> Array.findIndex ((=)0uy) // Partial application of the = operator.
-         |> fun x -> x/k,x%k
 
 let inline is_viable_swap (r,c) =
     r >= 0 && c >= 0 && r < k && c < k
@@ -87,6 +31,7 @@ let inline swap (r1,c1) (r2,c2) (ar: byte[]) =
     set ar (r1,c1) (get ar (r1,c1) - get ar (r2,c2))
     ar
 
+
 let inline check_victory (ar: _[]) = // Breaking out of a loop can be a real pain in the ass in F#. 2D arrays are also a pain in the ass.
     let rec loop i =
         if i < ar.Length then
@@ -96,7 +41,7 @@ let inline check_victory (ar: _[]) = // Breaking out of a loop can be a real pai
         else true
     loop 1
 
-let astar() =
+let idsa_star() =
     let conf_buffer = ResizeArray()
     let conf_buffer2 = ResizeArray()
 
@@ -142,33 +87,27 @@ let astar() =
 
         let mutable s = 0
         for r=0 to k-1 do
-            s <- s + (column_linear_conflicts r + row_linear_conflicts r)*2
+            //s <- s + (column_linear_conflicts r + row_linear_conflicts r)*2
             for c=0 to k-1 do
                 let e = ar.[r*k+c] |> int
                 s <- s + manhattan_distance_for_a_single_tile e (r,c)
         s
 
-
-    let queue = TabularPriorityQueue(1000)
+    let queue = Stack(100)
     let mutable goal = None
 
-    queue.Add (heuristic_cost init) (init,init_pos,[])
-//    let mutable max_len = 2
-//    let mutable num_ops = 0
+    queue.Push(init,init_pos,[])
+    let mutable num_ops = 0
 
-    let rec astar() =
-        if goal = None then
-//            num_ops <- num_ops+1
-            let ar, (r,c as p), past_moves = queue.PopMin
+    let rec idsa_star max_heuristic_cost =
+        if goal = None && queue.Count > 0 then
+            num_ops <- num_ops+1
+            let ar, (r,c as p), past_moves = queue.Pop()
             let past_moves_length = past_moves.Length
-//            if past_moves_length > max_len then
-//                max_len <- past_moves.Length
-//                printfn "max_len = %i" max_len
-//            printfn "ar=%A p=%A past_moves=%A" ar p past_moves
-            [|-1+r,c,Moves.UP; // UP
-            r,-1+c,Moves.LEFT; // LEFT
-            r,1+c,Moves.RIGHT; // RIGHT
-            1+r,c,Moves.DOWN|] // DOWN
+            [|-1+r,c,Moves.UP;
+            r,-1+c,Moves.LEFT;
+            r,1+c,Moves.RIGHT;
+            1+r,c,Moves.DOWN|]
             |> Array.filter (fun (r,c,m) -> 
                 is_viable_swap (r,c) &&
                 match past_moves with
@@ -181,25 +120,31 @@ let astar() =
                     | _ -> true
                 | [] -> true)
             |> fun moves ->
-//                printfn "moves=%A" moves
                 let rec loop i =
                     if i < moves.Length then
                         let r,c,m = moves.[i]
                         let s = swap p (r,c) ar
-//                        printfn "s=%A" s
                         if check_victory s then
                             goal <- Some (s, m::past_moves |> List.rev)
                         else
-                            queue.Add (heuristic_cost s + (past_moves_length+1)) (s,(r,c), m::past_moves)
+                            if (heuristic_cost s + (past_moves_length+1)) <= max_heuristic_cost then
+                                queue.Push(s,(r,c), m::past_moves)
                             loop (i+1)
                 loop 0
-            astar()
-    astar()
-    goal.Value
+            idsa_star max_heuristic_cost
+        elif goal = None && queue.Count = 0 then
+            printfn "Deepening to %i..." (max_heuristic_cost+1)
+            queue.Push(init,init_pos,[])
+            idsa_star <| max_heuristic_cost+1
+    idsa_star <| heuristic_cost init
+    goal.Value, num_ops
 
-let max_goal, path = astar()
+#time
+let (max_goal, path), num_ops = idsa_star()
 let l = path.Length
+#time
 
-printfn "%i" l
-for x in path do printfn "%A" x
+//printfn "%i" l
+//for x in path do printfn "%A" x
+
 
