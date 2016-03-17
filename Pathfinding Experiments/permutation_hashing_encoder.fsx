@@ -49,7 +49,7 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
             let n = str.[ind] |> int
             let m = multinomial carr 
             carr
-            |> Array.scan (fun s carr_i -> s + carr_i * m / num_vars) 0L
+            |> Array.scan (fun s carr_i -> s + carr_i * m / num_vars) 0L // Exclusive scan
             |> fun x -> x.[n]
             |> fun v ->
                 let next_lb = lb+v
@@ -65,7 +65,7 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
     multinomial_encoder carr str 0 0L
     
 let multinomials = [|13L;1L;1L;1L|]
-multinomial multinomials
+
 let perm_ar = 
     [|
     for i=0 to multinomials.Length-1 do

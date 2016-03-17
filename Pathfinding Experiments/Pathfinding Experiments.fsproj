@@ -88,6 +88,7 @@
     <None Include="permutation_hashing_custom_solver.fsx" />
     <None Include="permutation_hashing_decoder.fsx" />
     <None Include="permutation_hashing_encoder.fsx" />
+    <None Include="jump_point_search.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Combinatorics">
