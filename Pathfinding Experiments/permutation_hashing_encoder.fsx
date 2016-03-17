@@ -48,12 +48,8 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
         if num_vars > 0L then
             let n = str.[ind] |> int
             let m = multinomial carr 
-            [| // Filters out zeroes, scans and appends the index position of the variable in the carr array.
-            let mutable s = 0L
-            for i=0 to carr.Length-1 do
-                yield s
-                s <- s + carr.[i] * m / num_vars
-            |] 
+            carr
+            |> Array.scan (fun s carr_i -> s + carr_i * m / num_vars) 0L
             |> fun x -> x.[n]
             |> fun v ->
                 let next_lb = lb+v
@@ -68,7 +64,7 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
         else lb
     multinomial_encoder carr str 0 0L
     
-let multinomials = [|2L;2L|]
+let multinomials = [|13L;1L;1L;1L|]
 multinomial multinomials
 let perm_ar = 
     [|
