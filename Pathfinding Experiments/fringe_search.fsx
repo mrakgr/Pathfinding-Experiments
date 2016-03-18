@@ -1,11 +1,10 @@
-﻿#r @"..\packages\OptimizedPriorityQueue.2.0.0\lib\net45\Priority Queue.dll"
+﻿// TODO
+
+#r @"..\packages\OptimizedPriorityQueue.2.0.0\lib\net45\Priority Queue.dll"
 open System
 open System.Collections.Generic
 open Priority_Queue
 
-let pac_r, pac_c as pac_pos = 35, 35
-let food_r, food_c as food_pos = 35, 1
-let rows, cols = 37, 37
 let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-----------------------------------%
 %-----------------------------------%
@@ -27,6 +26,14 @@ let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-----------------------------------%
 %-----------------------------------%
 %-----------------------------------%
+%---%-------------------------------%
+%---%-----------------%%%%%%%%%-----%
+%---%%%%%-------------%-------------%
+%-------%-------------%-------------%
+%-----.-%-------------%----P--------%
+%-------%-------------%-------------%
+%---%%%%%-------------%-------------%
+%---------------------%%%%%%%%%-----%
 %-----------------------------------%
 %-----------------------------------%
 %-----------------------------------%
@@ -34,15 +41,54 @@ let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %-----------------------------------%
 %-----------------------------------%
 %-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%.---------------------------------P%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|]
+
+let rows, cols =
+    level.Length,
+    level 
+    |> Array.map (fun x -> x.Length)
+    |> Array.distinct
+    |> fun x -> if x.Length <> 1 then failwith "Columns have to be evenly alligned." else x.[0]
+
+type FoodPacmanPosType =
+| NotFound
+| FoodFound of food_r : int * food_c : int
+| PacmanFound of pacman_r : int * pacman_c : int
+| BothFound of food_r : int * food_c : int * pacman_r : int * pacman_c : int
+
+let (food_r, food_c as food_pos),(pac_r, pac_c as pac_pos) = 
+    let rec loop state i =
+        let rec loop2 state j =
+            if j < cols then
+                match state with
+                | NotFound ->
+                    match level.[i].[j] with
+                    | '.' -> loop2 <| FoodFound(i,j) <| j+1
+                    | 'P' -> loop2 <| PacmanFound(i,j) <| j+1
+                    | _ -> loop2 state <| j+1
+                | PacmanFound(pacman_r, pacman_c) ->
+                    match level.[i].[j] with
+                    | '.' -> loop2 <| BothFound(i,j,pacman_r,pacman_c) <| j+1
+                    | 'P' -> failwith "Two Pacmans are not allowed in the graph."
+                    | _ -> loop2 state <| j+1
+                | FoodFound(food_r, food_c) ->
+                    match level.[i].[j] with
+                    | '.' -> failwith "Two goals are not allowed in the graph."
+                    | 'P' -> loop2 <| BothFound(food_r, food_c, i, j) <| j+1 
+                    | _ -> loop2 state <| j+1
+                | BothFound(food_r, food_c, pacman_r, pacman_c) ->
+                    match level.[i].[j] with
+                    | '.' -> failwith "Two goals are not allowed in the graph."
+                    | 'P' -> failwith "Two Pacmans are not allowed in the graph."
+                    | _ -> loop2 state <| j+1
+            else state
+        if i < rows then loop (loop2 state 0) <| i+1
+        else
+            match state with
+            | BothFound(food_r, food_c, pacman_r, pacman_c) -> (food_r, food_c), (pacman_r, pacman_c)
+            | _ -> failwith "Food or Pacman not found!"
+        
+    loop NotFound 0
 
 let astar() =
     let mutable max_goal = Int32.MaxValue
@@ -62,7 +108,10 @@ let astar() =
            | Some n -> get_trace_from n (i-1) (p::accum)
            | None -> p::accum
     let inline manhattan_distance (r,c) dist_to_source =
-        abs(r-food_r) + abs(c-food_c) + dist_to_source |> float
+        let a = abs(r-food_r) |> float |> fun x -> x*1.001
+        let b = abs(c-food_c) |> float
+        let c = dist_to_source |> float
+        a+b+c
 
     let queue = SimplePriorityQueue()
     let expanded_nodes = ResizeArray()

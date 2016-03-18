@@ -1,4 +1,8 @@
-﻿// Astar search for the N puzzle problem with the tabular priority queue.
+﻿// Idsa search for the N puzzle problem with the tabular priority queue.
+
+// Update: Idsa is kind of bad, but Fringe Search might be worth trying out: http://cswww.essex.ac.uk/cig/2005/papers/p1039.pdf
+// Also, memory enhanced IDSA should be worth a look into.
+// This paper on cache efficient structures caught my eye as well, referenced from the Fringe Search paper: http://cswww.essex.ac.uk/cig/2005/papers/p1039.pdf
 
 let k = 4
 let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
