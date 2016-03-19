@@ -1,4 +1,4 @@
-﻿// Astar search for the N puzzle problem with the tabular priority queue.
+﻿// TODO: This was supposed to be the start of pattern database. I'll do it eventually.
 
 let k = 4
 let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle

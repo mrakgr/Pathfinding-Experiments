@@ -1,14 +1,21 @@
 ﻿// Astar search for the N puzzle problem with the tabular priority queue.
+// This is the corrected Astar one is with the closed set added back in. I really should have had this in the previous sections.
+
+// Edit: Actually adding that visited_set does not seem to be doing anything.
+// I need to remove the cruft from all the functions and bring in that encoder that I did a while ago. This is simply not getting the job done.
+
+// Edit2: I forgot to add elements to the visited_set. Let me try again...no it is still slow. Nevermind this for now.
+// I'll leave N puzzle alone for the time being.
 
 open System
 open System.Collections.Generic
 
 let k = 4
-//let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
+let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
 //let init_pos, init = (1, 2), [|4; 1; 2; 3; 8; 6; 0; 10; 9; 5; 15; 7; 12; 13; 11; 14|]
 //let init_pos, init = (0,2), [|2;3;0;8;15;12;6;7;13;1;4;9;14;11;10;5|] |> Array.map byte // Super hard.
-let init_pos, init = (0,3),   [|1uy; 2uy; 3uy; 0uy; 5uy; 12uy; 7uy; 4uy; 13uy; 6uy; 14uy; 9uy; 10uy; 8uy; 11uy; 15uy|]
-//let init_pos, init = (1,2), [|1uy; 2uy; 3uy; 4uy; 5uy; 6uy; 0uy; 8uy; 9uy; 10uy; 7uy; 12uy; 13uy; 14uy; 11uy; 15uy|]
+//let init_pos, init = (0,3),   [|1uy; 2uy; 3uy; 0uy; 5uy; 12uy; 7uy; 4uy; 13uy; 6uy; 14uy; 9uy; 10uy; 8uy; 11uy; 15uy|]
+//let init_pos, init = (1,2), [|1uy; 2uy; 3uy; 4uy; 5uy; 6uy; 0uy; 8uy; 9uy; 10uy; 7uy; 12uy; 13uy; 14uy; 11uy; 15uy|] // All of these are harder than the hard puzzle.
 //let init_pos, init = 
 //     (1,2),
 //     """ 1  2  3  4 
@@ -156,9 +163,13 @@ let astar() =
 
 
     let queue = TabularPriorityQueue(1000)
+    let visited_set = Dictionary(1000000)
+
     let mutable goal = None
 
     queue.Add (heuristic_cost init) (init,init_pos,[])
+    visited_set.Add(init,heuristic_cost init)
+
     let mutable max_len = 2
     let mutable num_ops = 0
 
@@ -190,11 +201,17 @@ let astar() =
                     if i < moves.Length then
                         let r,c,m = moves.[i]
                         let s = swap p (r,c) ar
-                        if check_victory s then
-                            goal <- Some (s, m::past_moves |> List.rev)
-                        else
-                            queue.Add (heuristic_cost s + (past_moves_length+1)) (s,(r,c), m::past_moves)
-                            loop (i+1)
+                        let cs = heuristic_cost s + past_moves_length+1
+                        match visited_set.TryGetValue s with
+                        | true, v -> 
+                            if v > cs then visited_set.[s] <- v
+                        | false, _ ->
+                            if check_victory s then
+                                goal <- Some (s, m::past_moves |> List.rev)
+                            else
+                                visited_set.Add(s,cs)
+                                queue.Add cs (s,(r,c), m::past_moves)
+                                loop (i+1)
                 loop 0
             astar()
     astar()
@@ -207,3 +224,4 @@ let l = path.Length
 
 //printfn "%i" l
 //for x in path do printfn "%A" x
+
