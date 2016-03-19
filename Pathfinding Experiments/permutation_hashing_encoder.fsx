@@ -84,3 +84,13 @@ let test =
         x, k, str, str = x)
 
 test |> Array.filter (fun (_,_,_,x) -> not x)
+
+#time
+for i=0 to 100000 do
+    multinomial_encoder multinomials perm_ar |> ignore
+#time
+
+#time
+for i=0 to 100000 do
+    multinomial_decoder multinomials 2L |> ignore
+#time

@@ -89,6 +89,7 @@
     <None Include="permutation_hashing_decoder.fsx" />
     <None Include="permutation_hashing_encoder.fsx" />
     <None Include="fringe_search.fsx" />
+    <None Include="permutation_hashing_encoder_decoder_v2.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Combinatorics">
