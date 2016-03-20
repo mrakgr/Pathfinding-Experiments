@@ -286,7 +286,7 @@ let fringe_search() =
                 later <- t
                 let t' = later_upper_bound
                 later_upper_bound <- Double.MaxValue
-                fringe_search t'
+                fringe_search <| upper_bound + 1.0
             
 
     now.Push((pac_pos,1,manhattan_distance pac_pos 1))
@@ -302,3 +302,4 @@ stopwatch.Restart()
 for i=1 to 30000 do
     fringe_search() |> ignore
 printfn "Time elapsed for fringe_search: %A" stopwatch.Elapsed    
+

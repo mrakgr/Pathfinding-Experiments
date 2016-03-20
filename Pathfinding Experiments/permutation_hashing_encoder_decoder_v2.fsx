@@ -24,22 +24,18 @@ let multinomial (carr : int64[]) =
 let multinomial_decoder (carr : int64[]) k =
     let num_vars = Array.sum carr
     let result = Array.zeroCreate (num_vars |> int)
-    let buffer = ResizeArray(num_vars |> int)
-
     let rec multinomial_decoder (carr : int64[]) k ind =
         if ind < num_vars then
             let m = multinomial carr 
             // Filters out zeroes, scans and appends the index position of the variable in the carr array.
             let mutable s = 0L
-            for i=0 to carr.Length-1 do
-                if carr.[i] > 0L then
-                    buffer.Add((s,i))
-                    s <- s + carr.[i] * m / (num_vars - ind (* The number of vars in the current coefficient array. *))
-
             let rec findBack i =
-                let l,_ as p = buffer.[i]
-                if k >= l then p else findBack (i-1)
-            findBack (buffer.Count-1)
+                if i < carr.Length then
+                    let t = s
+                    s <- s + carr.[i] * m / (num_vars - ind (* The number of vars in the current coefficient array. *))
+                    if k < s then t, i else findBack <| i+1
+                else s, i
+            findBack 0
             |> fun (l,i) ->
                 let next_k = k - l
                 let next_carr =
@@ -68,7 +64,8 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
         else lb
     multinomial_encoder (carr |> Array.copy) str 0L 0L
     
-let multinomials = [|2L;2L;1L;2L|]
+let multinomials = [|14L;1L;1L|]
+multinomial multinomials
 
 let perm_ar = 
     [|
@@ -100,3 +97,5 @@ for i=0 to 100000 do
     multinomial_decoder multinomials 2L |> ignore
 
 printfn "Time elapsed for decoder: %A" stopwatch.Elapsed
+
+Int64.MaxValue - 50L |> int

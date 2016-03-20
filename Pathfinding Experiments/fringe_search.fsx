@@ -10,81 +10,81 @@ open System
 open System.Collections.Generic
 open Priority_Queue
 
-let level = 
-    """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%---%-------------------------------%
-%---%-----------------%%%%%%%%%-----%
-%---%%%%%-------------%-------------%
-%-------%-------------%-------------%
-%-----.-%-------------%----P--------%
-%-------%-------------%-------------%
-%---%%%%%-------------%-------------%
-%---------------------%%%%%%%%%-----%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%-----------------------------------%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
-//let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//%-------%-%-%-----------%---%-----%-%
-//%-%%%%%%%-%-%%%-%-%%%-%%%-%%%%%%%-%-%
-//%-------%-------%-%-----%-----%-%---%
-//%%%%%-%%%%%-%%%-%-%-%-%%%-%%%%%-%-%%%
-//%---%-%-%-%---%-%-%-%---%-%---%-%---%
-//%-%%%-%-%-%-%%%-%%%%%-%%%-%-%%%-%%%-%
-//%-------%-----%---%---%-----%-%-%---%
-//%%%-%%%%%%%%%-%%%%%%%-%%%-%%%-%-%-%-%
-//%-------------%-------%-%---%-----%-%
-//%-%-%%%%%-%-%%%-%-%-%%%-%-%%%-%%%-%-%
-//%-%-%-----%-%-%-%-%-----%---%-%-%-%-%
-//%-%-%-%%%%%%%-%-%%%%%%%%%-%%%-%-%%%-%
-//%-%-%-%-----%---%-----%-----%---%---%
-//%%%-%%%-%-%%%%%-%%%%%-%%%-%%%-%%%%%-%
-//%-----%-%-%-----%-%-----%-%---%-%-%-%
-//%-%-%-%-%-%%%-%%%-%%%-%%%-%-%-%-%-%-%
-//%-%-%-%-%-----------------%-%-%-----%
-//%%%-%%%%%%%-%-%-%%%%%-%%%-%-%%%-%%%%%
-//%-------%-%-%-%-----%---%-----%-%---%
-//%%%%%-%-%-%%%%%%%%%-%%%%%%%%%%%-%-%%%
-//%---%-%-----------%-%-----%---%-%---%
-//%-%%%-%%%%%-%%%%%%%%%-%%%%%-%-%-%%%-%
-//%-%---%------%--------%-----%-------%
-//%-%-%-%%%%%-%%%-%-%-%-%-%%%%%%%%%%%%%
-//%-%-%---%-----%-%-%-%-------%---%-%-%
-//%-%-%%%-%%%-%-%-%-%%%%%%%%%-%%%-%-%-%
-//%-%---%-%---%-%-%---%-%---%-%-%-----%
-//%-%%%-%%%-%%%%%-%%%-%-%-%%%%%-%-%%%%%
-//%-------%---%-----%-%-----%---%-%---%
-//%%%-%-%%%%%-%%%%%-%%%-%%%-%-%%%-%-%%%
-//%-%-%-%-%-%-%-%-----%-%---%-%---%-%-%
-//%-%-%%%-%-%-%-%-%%%%%%%%%-%-%-%-%-%-%
-//%---%---%---%-----------------%-----%
-//%-%-%-%-%%%-%%%-%%%%%%%-%%%-%%%-%%%-%
-//%.%-%-%-------%---%-------%---%-%--P%
+//let level = 
+//    """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%---%-------------------------------%
+//%---%-----------------%%%%%%%%%-----%
+//%---%%%%%-------------%-------------%
+//%-------%-------------%-------------%
+//%-----.-%-------------%----P--------%
+//%-------%-------------%-------------%
+//%---%%%%%-------------%-------------%
+//%---------------------%%%%%%%%%-----%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
+//%-----------------------------------%
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
+let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------%-%-%-----------%---%-----%-%
+%-%%%%%%%-%-%%%-%-%%%-%%%-%%%%%%%-%-%
+%-------%-------%-%-----%-----%-%---%
+%%%%%-%%%%%-%%%-%-%-%-%%%-%%%%%-%-%%%
+%---%-%-%-%---%-%-%-%---%-%---%-%---%
+%-%%%-%-%-%-%%%-%%%%%-%%%-%-%%%-%%%-%
+%-------%-----%---%---%-----%-%-%---%
+%%%-%%%%%%%%%-%%%%%%%-%%%-%%%-%-%-%-%
+%-------------%-------%-%---%-----%-%
+%-%-%%%%%-%-%%%-%-%-%%%-%-%%%-%%%-%-%
+%-%-%-----%-%-%-%-%-----%---%-%-%-%-%
+%-%-%-%%%%%%%-%-%%%%%%%%%-%%%-%-%%%-%
+%-%-%-%-----%---%-----%-----%---%---%
+%%%-%%%-%-%%%%%-%%%%%-%%%-%%%-%%%%%-%
+%-----%-%-%-----%-%-----%-%---%-%-%-%
+%-%-%-%-%-%%%-%%%-%%%-%%%-%-%-%-%-%-%
+%-%-%-%-%-----------------%-%-%-----%
+%%%-%%%%%%%-%-%-%%%%%-%%%-%-%%%-%%%%%
+%-------%-%-%-%-----%---%-----%-%---%
+%%%%%-%-%-%%%%%%%%%-%%%%%%%%%%%-%-%%%
+%---%-%-----------%-%-----%---%-%---%
+%-%%%-%%%%%-%%%%%%%%%-%%%%%-%-%-%%%-%
+%-%---%------%--------%-----%-------%
+%-%-%-%%%%%-%%%-%-%-%-%-%%%%%%%%%%%%%
+%-%-%---%-----%-%-%-%-------%---%-%-%
+%-%-%%%-%%%-%-%-%-%%%%%%%%%-%%%-%-%-%
+%-%---%-%---%-%-%---%-%---%-%-%-----%
+%-%%%-%%%-%%%%%-%%%-%-%-%%%%%-%-%%%%%
+%-------%---%-----%-%-----%---%-%---%
+%%%-%-%%%%%-%%%%%-%%%-%%%-%-%%%-%-%%%
+%-%-%-%-%-%-%-%-----%-%---%-%---%-%-%
+%-%-%%%-%-%-%-%-%%%%%%%%%-%-%-%-%-%-%
+%---%---%---%-----------------%-----%
+%-%-%-%-%%%-%%%-%%%%%%%-%%%-%%%-%%%-%
+%.%-%-%-------%---%-------%---%-%--P%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
 
 let rows, cols =
     level.Length,
@@ -163,7 +163,6 @@ let astar() =
 
     let queue = SimplePriorityQueue()
     //let expanded_nodes = ResizeArray()
-    let filtration_buffer = ResizeArray(4)
 
     let rec astar() =
         let print_expansion ex =
@@ -181,28 +180,22 @@ let astar() =
         if max_goal = Int32.MaxValue then
             let (pac_r,pac_c as pac_pos),i = queue.Dequeue()
             //print_expansion expanded_nodes
-            filtration_buffer.Clear()
 
-            let inline if_viable_add_to_filter x = // Replacing Array filter increase performance for both Fringe Search and Astar by 80%
+            let inline if_viable_execute x =
                 let inline is_viable (n_r, n_c as x) = level.[n_r].[n_c] <> '%' && is_not_visited x
-                if is_viable x then filtration_buffer.Add x
+                let inline execute x =
+                    let next_i = i+1
+                    if x <> food_pos then
+                        queue.Enqueue((x,next_i),manhattan_distance x next_i); set x next_i; //expanded_nodes.Add(x)
+                    else set x next_i; max_goal <- next_i; //expanded_nodes.Add(x)
 
-            if_viable_add_to_filter (-1+pac_r,pac_c) // UP
-            if_viable_add_to_filter (pac_r,-1+pac_c) // LEFT
-            if_viable_add_to_filter (pac_r,1+pac_c) // RIGHT
-            if_viable_add_to_filter (1+pac_r,pac_c) // DOWN
+                if is_viable x then execute x
 
-            filtration_buffer
-            |> fun ar ->
-                let next_i = i+1
-                let rec loop j =
-                    if j < ar.Count then
-                        let x = ar.[j]
-                        if x <> food_pos then
-                            queue.Enqueue((x,next_i),manhattan_distance x next_i); set x next_i; //expanded_nodes.Add(x)
-                            loop <| j+1
-                        else set x next_i; max_goal <- next_i; //expanded_nodes.Add(x)
-                loop 0
+            if_viable_execute (-1+pac_r,pac_c) // UP
+            if_viable_execute (pac_r,-1+pac_c) // LEFT
+            if_viable_execute (pac_r,1+pac_c) // RIGHT
+            if_viable_execute (1+pac_r,pac_c) // DOWN
+
             astar ()
 
     queue.Enqueue((pac_pos,1),manhattan_distance pac_pos 1)
@@ -238,8 +231,7 @@ let fringe_search() =
     let mutable later = Stack(2000)
     let mutable now = Stack(2000)
     //let expanded_nodes = ResizeArray(2000)
-
-    let filtration_buffer = ResizeArray(4)
+    let mutable later_upper_bound = Double.MaxValue
 
     let rec fringe_search upper_bound =
         let print_expansion ex =
@@ -263,40 +255,38 @@ let fringe_search() =
                     fringe_search upper_bound
                 else
                     //print_expansion expanded_nodes
-                    filtration_buffer.Clear()
 
-                    let inline if_viable_add_to_filter x = // Replacing Array filter increase performance for both Fringe Search and Astar by 80%
+                    let inline if_viable_execute x =
                         let inline is_viable (n_r, n_c as x) = level.[n_r].[n_c] <> '%' && is_not_visited x
-                        if is_viable x then filtration_buffer.Add x
+                        let inline execute x =
+                            let next_i = i+1
+                            if x <> food_pos then
+                                let c = manhattan_distance x next_i
 
-                    if_viable_add_to_filter (-1+pac_r,pac_c) // UP
-                    if_viable_add_to_filter (pac_r,-1+pac_c) // LEFT
-                    if_viable_add_to_filter (pac_r,1+pac_c) // RIGHT
-                    if_viable_add_to_filter (1+pac_r,pac_c) // DOWN
+                                if c <= upper_bound then now.Push((x,next_i,c))
+                                else 
+                                    if c < later_upper_bound then later_upper_bound <- c
+                                    later.Push((x,next_i,c))
+
+                                set x next_i 
+                                //expanded_nodes.Add(x)
+                            else set x next_i; max_goal <- next_i; //expanded_nodes.Add(x)
+
+                        if is_viable x then execute x
+
+                    if_viable_execute (-1+pac_r,pac_c) // UP
+                    if_viable_execute (pac_r,-1+pac_c) // LEFT
+                    if_viable_execute (pac_r,1+pac_c) // RIGHT
+                    if_viable_execute (1+pac_r,pac_c) // DOWN
                         
-                    filtration_buffer
-                    |> fun ar ->
-                        let next_i = i+1
-                        let rec loop j =
-                            if j < ar.Count then
-                                let x = ar.[j]
-                                if x <> food_pos then
-                                    let c = manhattan_distance x next_i
-
-                                    if c <= upper_bound then now.Push((x,next_i,c))
-                                    else later.Push((x,next_i,c))
-
-                                    set x next_i 
-                                    //expanded_nodes.Add(x)
-                                    loop <| j+1
-                                else set x next_i; max_goal <- next_i; //expanded_nodes.Add(x)
-                        loop 0
                     fringe_search upper_bound
             else
                 let t = now
                 now <- later
                 later <- t
-                fringe_search <| upper_bound+1.0
+                let t' = later_upper_bound
+                later_upper_bound <- Double.MaxValue
+                fringe_search t'
             
 
     now.Push((pac_pos,1,manhattan_distance pac_pos 1))
@@ -304,13 +294,11 @@ let fringe_search() =
     fringe_search <| manhattan_distance pac_pos 1
     max_goal, get_trace_from food_pos max_goal []//, expanded_nodes
 
-//let stopwatch = Diagnostics.Stopwatch.StartNew()
-//for i=1 to 30000 do
-//    astar() |> ignore
-//printfn "Time elapsed for astar: %A" stopwatch.Elapsed
-//stopwatch.Restart()
-//for i=1 to 30000 do
-//    fringe_search() |> ignore
-//printfn "Time elapsed for fringe_search: %A" stopwatch.Elapsed    
-
-fringe_search() |> ignore
+let stopwatch = Diagnostics.Stopwatch.StartNew()
+for i=1 to 30000 do
+    astar() |> ignore
+printfn "Time elapsed for astar: %A" stopwatch.Elapsed
+stopwatch.Restart()
+for i=1 to 30000 do
+    fringe_search() |> ignore
+printfn "Time elapsed for fringe_search: %A" stopwatch.Elapsed    
