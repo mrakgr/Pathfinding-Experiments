@@ -13,6 +13,9 @@
 
 // Also here the optimal path is calculated backwards from the trace, while in JPS that is done by connecting the jump points. Just a thing to keep in mind.
 
+// Edit3: It occurs to me that both this and the previous versions are incorrect as there are not enough constraints for orthogonal movement, but on the
+// large BG maps it is even slower than Astar and it is not worth the bother for me to fix it.
+
 #if INTERACTIVE
 #r @"..\packages\OptimizedPriorityQueue.2.0.0\lib\net45\Priority Queue.dll"
 #endif
@@ -61,7 +64,7 @@ open Priority_Queue
 //%-----------------------------------%
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
 let level = 
-    IO.File.ReadAllLines <| Path.Combine(__SOURCE_DIRECTORY__,"baldur's_gate_AR0014SR.map")
+    IO.File.ReadAllLines <| Path.Combine(__SOURCE_DIRECTORY__,"baldur's_gate_AR0015SR.map")
 
 let rows, cols =
     level.Length,

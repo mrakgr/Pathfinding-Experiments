@@ -143,17 +143,22 @@ let astar() =
     let trace = Array2D.create rows cols 0
     let inline set (r, c) i =
         trace.[r,c] <- i
-    let inline get (r, c) = trace.[r,c]
     let inline is_not_visited (r, c) =
         trace.[r,c] = 0
     let rec get_trace_from (pac_r, pac_c as p) i accum =
-        let inline is_visited_and_less_than i (r, c) =
-            trace.[r,c] <> 0 && trace.[r,c] = i-1
-        [|-1+pac_r,pac_c;pac_r,-1+pac_c;pac_r,1+pac_c;1+pac_r,pac_c;|] // UP, LEFT, RIGHT, DOWN
-        |> Array.tryFind (is_visited_and_less_than i)
+        let mutable n = None
+        let inline is_visited_and_less_than (r, c) =
+            trace.[r,c] <> 0 && trace.[r,c] = i-1 && (n <- Some (r,c); true) // n is assigned in this last expression
+        (is_visited_and_less_than (-1+pac_r,pac_c) // UP
+        || is_visited_and_less_than (pac_r,-1+pac_c) // LEFT
+        || is_visited_and_less_than (pac_r,1+pac_c) // RIGHT
+        || is_visited_and_less_than (1+pac_r,pac_c)) // DOWN
+        |> ignore
+        n
         |> function
            | Some n -> get_trace_from n (i-1) (p::accum)
            | None -> p::accum
+
     let inline manhattan_distance (r,c) dist_to_source =
         let a = abs(r-food_r) |> float |> fun x -> x*1.001
         let b = abs(c-food_c) |> float
@@ -210,14 +215,18 @@ let fringe_search() =
     let trace = Array2D.create rows cols 0
     let inline set (r, c) i =
         trace.[r,c] <- i
-    let inline get (r, c) = trace.[r,c]
-    let inline is_visited_and_less_than i (r, c) =
-        trace.[r,c] <> 0 && trace.[r,c] = i-1
     let inline is_not_visited (r, c) =
         trace.[r,c] = 0
     let rec get_trace_from (pac_r, pac_c as p) i accum =
-        [|-1+pac_r,pac_c;pac_r,-1+pac_c;pac_r,1+pac_c;1+pac_r,pac_c;|] // UP, LEFT, RIGHT, DOWN
-        |> Array.tryFind (is_visited_and_less_than i)
+        let mutable n = None
+        let inline is_visited_and_less_than (r, c) =
+            trace.[r,c] <> 0 && trace.[r,c] = i-1 && (n <- Some (r,c); true) // n is assigned in this last expression
+        (is_visited_and_less_than (-1+pac_r,pac_c) // UP
+        || is_visited_and_less_than (pac_r,-1+pac_c) // LEFT
+        || is_visited_and_less_than (pac_r,1+pac_c) // RIGHT
+        || is_visited_and_less_than (1+pac_r,pac_c)) // DOWN
+        |> ignore
+        n
         |> function
            | Some n -> get_trace_from n (i-1) (p::accum)
            | None -> p::accum
@@ -295,9 +304,11 @@ let fringe_search() =
 
 let stopwatch = Diagnostics.Stopwatch.StartNew()
 for i=1 to 1 do
+    //printfn "%A" <| 
     astar() |> ignore
 printfn "Time elapsed for astar: %A" stopwatch.Elapsed
 stopwatch.Restart()
 for i=1 to 1 do
+    //printfn "%A" <| 
     fringe_search() |> ignore
 printfn "Time elapsed for fringe_search: %A" stopwatch.Elapsed    
