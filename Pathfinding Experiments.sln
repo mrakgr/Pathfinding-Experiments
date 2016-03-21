@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Assembly Experiments", "Assembly Experiments\Assembly Experiments.fsproj", "{EEC018C7-4756-46D6-AF3E-445052199227}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Pathfinding Experiments", "Pathfinding Experiments\Pathfinding Experiments.fsproj", "{0D087769-41AA-4C73-A31A-34762342E7C6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6E1767A6-AC75-46EE-ACCA-95728F26EFAC}"
@@ -18,10 +16,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EEC018C7-4756-46D6-AF3E-445052199227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EEC018C7-4756-46D6-AF3E-445052199227}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EEC018C7-4756-46D6-AF3E-445052199227}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EEC018C7-4756-46D6-AF3E-445052199227}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D087769-41AA-4C73-A31A-34762342E7C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D087769-41AA-4C73-A31A-34762342E7C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D087769-41AA-4C73-A31A-34762342E7C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
