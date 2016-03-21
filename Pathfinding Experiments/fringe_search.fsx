@@ -259,6 +259,7 @@ let fringe_search() =
                 let (pac_r,pac_c as pac_pos),i,heuristic_cost as current_item = now.Pop()
                 if heuristic_cost > upper_bound 
                 then 
+                    if heuristic_cost < later_upper_bound then later_upper_bound <- heuristic_cost
                     later.Push current_item
                     fringe_search upper_bound
                 else
