@@ -64,8 +64,11 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
         else lb
     multinomial_encoder (carr |> Array.copy) str 0L 0L
     
-let multinomials = [|14L;1L;1L|]
+let multinomials = [|11L;1L;1L;1L;1L;1L|]
 multinomial multinomials
+|> fun x -> 524160L * 16L * 1365L
+
+21840L*524160L
 
 let perm_ar = 
     [|

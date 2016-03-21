@@ -91,7 +91,14 @@
     <None Include="permutation_hashing_encoder.fsx" />
     <None Include="permutation_hashing_encoder_decoder_v2.fsx" />
     <None Include="fringe_search.fsx" />
-    <None Include="dump.fsx" />
+    <Content Include="baldur%27s_gate_AR0011SR.map" />
+    <Content Include="baldur%27s_gate_AR0012SR.map" />
+    <Content Include="baldur%27s_gate_AR0013SR.map" />
+    <Content Include="baldur%27s_gate_AR0014SR.map" />
+    <Content Include="baldur%27s_gate_AR0015SR.map" />
+    <None Include="jump_point_search.fsx" />
+    <None Include="jump_point_search_v2.fsx" />
+    <None Include="pathfinding_lower_bounds.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Combinatorics">
