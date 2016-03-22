@@ -189,6 +189,7 @@ let fringe_search() =
                         
                     fringe_search upper_bound
             else
+                if later.Count = 0 then failwith "later = 0, no path possible!"
                 let t = now
                 now <- later
                 later <- t

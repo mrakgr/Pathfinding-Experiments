@@ -11,44 +11,44 @@ open System.IO
 open System.Collections.Generic
 open Priority_Queue
 
-//let level = 
-//    """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%---%-------------------------------%
-//%---%-----------------%%%%%%%%%-----%
-//%---%%%%%-------------%-------------%
-//%-------%-------------%-------------%
-//%-----.-%-------------%----P--------%
-//%-------%-------------%-------------%
-//%---%%%%%-------------%-------------%
-//%---------------------%%%%%%%%%-----%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%-----------------------------------%
-//%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
+let level = 
+    """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%---%-------------------------------%
+%---%-----------------%%%%%%%%%-----%
+%---%%%%%-------------%-------------%
+%-------%-------------%-------------%
+%-----.-%-------------%----P--------%
+%-------%-------------%-------------%
+%---%%%%%-------------%-------------%
+%---------------------%%%%%%%%%-----%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%-----------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
 //let level = """%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //%-------%-%-%-----------%---%-----%-%
 //%-%%%%%%%-%-%%%-%-%%%-%%%-%%%%%%%-%-%
@@ -87,8 +87,8 @@ open Priority_Queue
 //%.%-%-%-------%---%-------%---%-%--P%
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%""" |> fun x -> x.Split [|'\n'|] |> Array.map (fun x -> x.TrimEnd())
 
-let level = 
-    IO.File.ReadAllLines <| Path.Combine(__SOURCE_DIRECTORY__,"baldur's_gate_AR0015SR.map")
+//let level = 
+//    IO.File.ReadAllLines <| Path.Combine(__SOURCE_DIRECTORY__,"baldur's_gate_AR0015SR.map")
 
 let rows, cols =
     level.Length,
@@ -207,7 +207,11 @@ let astar() =
     astar()
     max_goal, get_trace_from food_pos max_goal []//, expanded_nodes
 
-
+type DirEnum =
+| UP = 0
+| LEFT = 1
+| RIGHT = 2
+| DOWN = 3
 
 let fringe_search() =
     let mutable max_goal = Int32.MaxValue
@@ -216,7 +220,21 @@ let fringe_search() =
     let inline set (r, c) i =
         trace.[r,c] <- i
     let inline is_not_visited (r, c) =
-        trace.[r,c] = 0
+        r >= 0 && c >= 0 && r < rows && c < cols && trace.[r,c] = 0
+    let rec get_trace_dir_from (pac_r, pac_c as p) i accum =
+        let mutable n = None
+        let inline is_visited_and_less_than (r, c) dir =
+            trace.[r,c] <> 0 && trace.[r,c] = i-1 && (n <- Some (r,c,dir); true) // n is assigned in this last expression
+        (is_visited_and_less_than (-1+pac_r,pac_c) DirEnum.DOWN // UP
+        || is_visited_and_less_than (pac_r,-1+pac_c) DirEnum.RIGHT // LEFT
+        || is_visited_and_less_than (pac_r,1+pac_c) DirEnum.LEFT // RIGHT
+        || is_visited_and_less_than (1+pac_r,pac_c) DirEnum.UP) // DOWN
+        |> ignore
+        n
+        |> function
+           | Some (r,c,dir) -> get_trace_dir_from (r,c) (i-1) (dir::accum)
+           | None -> accum
+
     let rec get_trace_from (pac_r, pac_c as p) i accum =
         let mutable n = None
         let inline is_visited_and_less_than (r, c) =
@@ -230,6 +248,7 @@ let fringe_search() =
         |> function
            | Some n -> get_trace_from n (i-1) (p::accum)
            | None -> p::accum
+
     let inline manhattan_distance (r,c) dist_to_source =
         let a = abs(r-food_r) // Symmetry breaking significantly reduces the performance of Fringe Search.
         let b = abs(c-food_c) // This surprised me a little, but Fringe Search is a bit like depth first search, so it makes some sense that it would work like that.
@@ -290,6 +309,7 @@ let fringe_search() =
                         
                     fringe_search upper_bound
             else
+                if later.Count = 0 then failwith "later = 0, no path possible!"
                 let t = now
                 now <- later
                 later <- t
@@ -301,15 +321,13 @@ let fringe_search() =
     now.Push((pac_pos,1,manhattan_distance pac_pos 1))
     set pac_pos 1
     fringe_search <| manhattan_distance pac_pos 1
-    max_goal, get_trace_from food_pos max_goal []//, expanded_nodes
+    max_goal, get_trace_dir_from food_pos max_goal []//, expanded_nodes
 
 let stopwatch = Diagnostics.Stopwatch.StartNew()
 for i=1 to 1 do
-    //printfn "%A" <| 
-    astar() |> ignore
+    printfn "%A" <| astar() // |> ignore
 printfn "Time elapsed for astar: %A" stopwatch.Elapsed
 stopwatch.Restart()
 for i=1 to 1 do
-    //printfn "%A" <| 
-    fringe_search() |> ignore
+    printfn "%A" <| fringe_search() //|> ignore
 printfn "Time elapsed for fringe_search: %A" stopwatch.Elapsed    
