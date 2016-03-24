@@ -1,9 +1,15 @@
-﻿open System
+﻿// The first version of the next generation N puzzle solver.
+// Without the decoder and the encoder function it solves the "hard" puzzle in 3:43. With the aforementioned permutation packing function
+// it does it in 41s and with much more space efficiency.
+
+// This will get its own repo and will be the basis for a pattern database and eventually a neural net approach.
+
+open System
 open System.Collections.Generic
 
 let k = 4
 //let init_pos, init = (2,0), [|5uy; 6uy; 8uy; 7uy; 2uy; 1uy; 0uy; 3uy; 4uy|]
-let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
+let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // "Hard" puzzle
 //let init_pos, init = (1, 2), [|4uy; 1uy; 2uy; 3uy; 8uy; 6uy; 0uy; 10uy; 9uy; 5uy; 15uy; 7uy; 12uy; 13uy; 11uy; 14uy|]
 //let init_pos, init = (0,2), [|2;3;0;8;15;12;6;7;13;1;4;9;14;11;10;5|] |> Array.map byte // Super hard.
 //let init_pos, init = (0,3),   [|1uy; 2uy; 3uy; 0uy; 5uy; 12uy; 7uy; 4uy; 13uy; 6uy; 14uy; 9uy; 10uy; 8uy; 11uy; 15uy|]
@@ -260,7 +266,4 @@ let max_goal, trace =
         if max_goal <> trace.Length then failwith "max_goal <> trace.Length"
         x
 #time
-
-//printfn "%i" l
-//for x in path do printfn "%A" x
 
