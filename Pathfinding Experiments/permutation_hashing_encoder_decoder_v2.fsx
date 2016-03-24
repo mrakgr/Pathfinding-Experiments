@@ -18,7 +18,11 @@ let fact =
 
 let multinomial (carr : int64[]) = 
     let u = carr |> Array.sum |> fun x -> fact.[x |> int]
-    let d = carr |> Array.fold (fun s e -> s*fact.[e |> int]) 1L
+    let d = //carr |> Array.fold (fun s e -> s*fact.[e |> int]) 1L
+        let mutable s = fact.[carr.[0] |> int] // Speed optimization
+        for i=1 to carr.Length-1 do
+            s <- s*fact.[carr.[i] |> int]
+        s
     u/d
 
 let multinomial_decoder (carr : int64[]) k =
@@ -65,10 +69,6 @@ let multinomial_encoder (carr : int64[]) (str : int64[]) =
     multinomial_encoder (carr |> Array.copy) str 0L 0L
     
 let multinomials = [|11L;1L;1L;1L;1L;1L|]
-multinomial multinomials
-|> fun x -> 524160L * 16L * 1365L
-
-21840L*524160L
 
 let perm_ar = 
     [|
@@ -87,7 +87,12 @@ let test =
         let str = multinomial_decoder multinomials k
         x, k, str, str = x)
 
-test |> Array.filter (fun (_,_,_,x) -> not x)
+test 
+|> Array.filter (fun (_,_,_,x) -> not x)
+|> fun x ->
+    if x.Length > 0 then
+        printfn "%A" x
+        failwith "Encoder and decoder are broken!"
 
 let stopwatch = Diagnostics.Stopwatch.StartNew()
 for i=0 to 100000 do
@@ -101,4 +106,3 @@ for i=0 to 100000 do
 
 printfn "Time elapsed for decoder: %A" stopwatch.Elapsed
 
-Int64.MaxValue - 50L |> int

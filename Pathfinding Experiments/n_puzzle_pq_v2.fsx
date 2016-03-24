@@ -5,9 +5,9 @@ open System.Collections.Generic
 
 let k = 4
 //let init_pos, init = (1, 2), [|15uy; 12uy; 9uy; 14uy; 5uy; 4uy; 0uy; 1uy; 3uy; 6uy; 2uy; 13uy; 7uy; 11uy; 8uy; 10uy|] // Hard puzzle
-//let init_pos, init = (1, 2), [|4; 1; 2; 3; 8; 6; 0; 10; 9; 5; 15; 7; 12; 13; 11; 14|]
+let init_pos, init = (1, 2), [|4uy; 1uy; 2uy; 3uy; 8uy; 6uy; 0uy; 10uy; 9uy; 5uy; 15uy; 7uy; 12uy; 13uy; 11uy; 14uy|]
 //let init_pos, init = (0,2), [|2;3;0;8;15;12;6;7;13;1;4;9;14;11;10;5|] |> Array.map byte // Super hard.
-let init_pos, init = (0,3),   [|1uy; 2uy; 3uy; 0uy; 5uy; 12uy; 7uy; 4uy; 13uy; 6uy; 14uy; 9uy; 10uy; 8uy; 11uy; 15uy|]
+//let init_pos, init = (0,3),   [|1uy; 2uy; 3uy; 0uy; 5uy; 12uy; 7uy; 4uy; 13uy; 6uy; 14uy; 9uy; 10uy; 8uy; 11uy; 15uy|]
 //let init_pos, init = (1,2), [|1uy; 2uy; 3uy; 4uy; 5uy; 6uy; 0uy; 8uy; 9uy; 10uy; 7uy; 12uy; 13uy; 14uy; 11uy; 15uy|]
 //let init_pos, init = 
 //     (1,2),

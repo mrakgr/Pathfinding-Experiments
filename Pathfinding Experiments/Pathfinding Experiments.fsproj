@@ -99,6 +99,7 @@
     <None Include="jump_point_search.fsx" />
     <None Include="jump_point_search_v2.fsx" />
     <None Include="pathfinding_lower_bounds.fsx" />
+    <None Include="n_puzzle_fringe_search.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Combinatorics">
